@@ -1,3 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>SG Findorff Panel</title>
+
+<style>
+
+body{
+margin:0;
+background:#0f1115;
+font-family:Segoe UI,Arial;
+color:white;
+}
+
+.panel{
+max-width:420px;
+margin:30px auto;
+padding:25px;
+background:#161a21;
+border-radius:14px;
+box-shadow:0 20px 40px rgba(0,0,0,0.7);
+}
+
+h1{
+text-align:center;
+margin-bottom:20px;
+}
+
+.section{
+margin-top:20px;
+}
+
+button{
+width:48%;
+padding:14px;
+margin:6px 1%;
+border:none;
+border-radius:8px;
+font-size:15px;
+font-weight:bold;
+cursor:pointer;
+}
+
+.green{background:#1f7a3d;color:white;}
+.blue{background:#2155a3;color:white;}
+.gray{background:#3a3f47;color:white;}
+.red{background:#b42323;color:white;width:100%;}
+
+input{
+width:100%;
+padding:10px;
+margin-bottom:8px;
+border:none;
+border-radius:6px;
+background:#222833;
+color:white;
+}
+
+.scoreDisplay{
+display:flex;
+justify-content:space-between;
+background:#0c0f14;
+padding:15px;
+border-radius:10px;
+margin-bottom:20px;
+}
+
+.teamBox{
+text-align:center;
+width:40%;
+}
+
+.points{
+font-size:34px;
+font-weight:bold;
+}
+
+.timer{
+font-size:22px;
+font-weight:bold;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="panel">
+
+<h1>SG Findorff Panel</h1>
+
+<div class="scoreDisplay">
+
+<div class="teamBox">
+<div id="teamA">TEAM A</div>
+<div class="points" id="pointsA">0</div>
+<div>Sätze <span id="setsA">0</span></div>
+</div>
+
+<div class="timer" id="timer">00:00</div>
+
+<div class="teamBox">
+<div id="teamB">TEAM B</div>
+<div class="points" id="pointsB">0</div>
+<div>Sätze <span id="setsB">0</span></div>
+</div>
+
+</div>
+
+<div class="section">
+<input id="teamAInput" placeholder="Team A Name">
+<input id="teamBInput" placeholder="Team B Name">
+<button class="gray" style="width:100%" onclick="updateTeams()">Teams aktualisieren</button>
+</div>
+
+<div class="section">
+<button class="green" onclick="addPoint('A')">+ Punkt A</button>
+<button class="blue" onclick="addPoint('B')">+ Punkt B</button>
+<button class="green" onclick="removePoint('A')">− Punkt A</button>
+<button class="blue" onclick="removePoint('B')">− Punkt B</button>
+</div>
+
+<div class="section">
+<button class="green" onclick="addSet('A')">+ Satz A</button>
+<button class="blue" onclick="addSet('B')">+ Satz B</button>
+</div>
+
+<div class="section">
+<button class="gray" onclick="startTimer()">Start</button>
+<button class="gray" onclick="stopTimer()">Stop</button>
+<button class="gray" style="width:100%" onclick="resetTimer()">Reset</button>
+</div>
+
+<button class="red" onclick="fullReset()">Komplett Reset</button>
+
+</div>
 
 <script type="module">
 
@@ -40,8 +177,6 @@ const snap=await get(ref(db));
 return snap.val();
 }
 
-/* ------------------ PUNKTE ------------------ */
-
 window.addPoint=async function(team){
 
 const d = await readData();
@@ -55,22 +190,16 @@ else pointsB++;
 let setsA = d.setsA;
 let setsB = d.setsB;
 
-/* VOLLEYBALL SATZ REGEL */
-
 if(pointsA >= 25 && pointsA - pointsB >= 2){
-
 setsA++;
 pointsA = 0;
 pointsB = 0;
-
 }
 
 if(pointsB >= 25 && pointsB - pointsA >= 2){
-
 setsB++;
 pointsA = 0;
 pointsB = 0;
-
 }
 
 update(ref(db),{
@@ -82,8 +211,6 @@ setsB:setsB
 
 }
 
-/* ------------------ PUNKTE ENTFERNEN ------------------ */
-
 window.removePoint=async function(team){
 
 const d=await readData();
@@ -93,8 +220,6 @@ if(team==="B" && d.pointsB>0) update(ref(db),{pointsB:d.pointsB-1});
 
 }
 
-/* ------------------ SÄTZE ------------------ */
-
 window.addSet=async function(team){
 
 const d=await readData();
@@ -103,8 +228,6 @@ if(team==="A") update(ref(db),{setsA:d.setsA+1,pointsA:0,pointsB:0});
 else update(ref(db),{setsB:d.setsB+1,pointsA:0,pointsB:0});
 
 }
-
-/* ------------------ TEAMNAMEN ------------------ */
 
 window.updateTeams=function(){
 
@@ -117,8 +240,6 @@ teamB:teamB
 });
 
 }
-
-/* ------------------ TIMER ------------------ */
 
 let timerInterval;
 let seconds=0;
@@ -135,17 +256,13 @@ updateTimer();
 }
 
 window.stopTimer=function(){
-
 clearInterval(timerInterval);
 timerInterval=null;
-
 }
 
 window.resetTimer=function(){
-
 seconds=0;
 updateTimer();
-
 }
 
 function updateTimer(){
@@ -156,8 +273,6 @@ const sec=String(seconds%60).padStart(2,"0");
 update(ref(db),{timer:`${min}:${sec}`});
 
 }
-
-/* ------------------ RESET ------------------ */
 
 window.fullReset=function(){
 
@@ -180,3 +295,6 @@ seconds=0;
 }
 
 </script>
+
+</body>
+</html>
