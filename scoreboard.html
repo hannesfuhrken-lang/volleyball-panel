@@ -1,56 +1,67 @@
+
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>SG Findorff Scoreboard</title>
+<title>Volleyball Broadcast Scoreboard</title>
 
 <script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
 import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyDd9E5P9vR_Buwgh_shM0p-msjdwq3I7XU",
-  authDomain: "volleyballscoreboard-52f22.firebaseapp.com",
-  databaseURL: "https://volleyballscoreboard-52f22-default-rtdb.firebaseio.com",
-  projectId: "volleyballscoreboard-52f22",
-  storageBucket: "volleyballscoreboard-52f22.firebasestorage.app",
-  messagingSenderId: "826519449030",
-  appId: "1:826519449030:web:110111c4e1fa1f8fa796c7"
+apiKey: "AIzaSyDd9E5P9vR_Buwgh_shM0p-msjdwq3I7XU",
+authDomain: "volleyballscoreboard-52f22.firebaseapp.com",
+databaseURL: "https://volleyballscoreboard-52f22-default-rtdb.firebaseio.com",
+projectId: "volleyballscoreboard-52f22",
+storageBucket: "volleyballscoreboard-52f22.firebasestorage.app",
+messagingSenderId: "826519449030",
+appId: "1:826519449030:web:110111c4e1fa1f8fa796c7"
 };
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 
-let lastPointsA = 0;
-let lastPointsB = 0;
+let lastA = 0;
+let lastB = 0;
 
 onValue(ref(db), (snapshot)=>{
-  const d = snapshot.val();
-  if(!d) return;
 
-  document.getElementById("teamA").innerText = d.teamA;
-  document.getElementById("teamB").innerText = d.teamB;
+const d = snapshot.val();
+if(!d) return;
 
-  document.getElementById("setsA").innerText = d.setsA;
-  document.getElementById("setsB").innerText = d.setsB;
+document.getElementById("teamA").innerText = d.teamA;
+document.getElementById("teamB").innerText = d.teamB;
 
-  document.getElementById("pointsA").innerText = d.pointsA;
-  document.getElementById("pointsB").innerText = d.pointsB;
+document.getElementById("pointsA").innerText = d.pointsA;
+document.getElementById("pointsB").innerText = d.pointsB;
 
-  document.getElementById("timer").innerText = d.timer;
+document.getElementById("setsA").innerText = d.setsA;
+document.getElementById("setsB").innerText = d.setsB;
 
-  if(d.pointsA > lastPointsA) animate("pointsA");
-  if(d.pointsB > lastPointsB) animate("pointsB");
+document.getElementById("timer").innerText = d.timer;
 
-  lastPointsA = d.pointsA;
-  lastPointsB = d.pointsB;
+if(d.pointsA > lastA) flash("pointsA");
+if(d.pointsB > lastB) flash("pointsB");
+
+lastA = d.pointsA;
+lastB = d.pointsB;
+
 });
 
-function animate(id){
-  const el = document.getElementById(id);
-  el.classList.add("scoreFlash");
-  setTimeout(()=>el.classList.remove("scoreFlash"),600);
+function flash(id){
+
+const el = document.getElementById(id);
+
+el.classList.add("scoreAnim");
+
+setTimeout(()=>{
+el.classList.remove("scoreAnim");
+},500);
+
 }
+
 </script>
 
 <style>
@@ -58,28 +69,40 @@ function animate(id){
 body{
 margin:0;
 background:transparent;
-font-family:Arial;
+font-family:Arial,Helvetica,sans-serif;
 }
 
-.scoreboard{
-width:900px;
-margin:40px auto;
-}
+.overlay{
 
-.row{
+position:absolute;
+bottom:40px;
+left:50%;
+transform:translateX(-50%);
+
 display:flex;
-height:80px;
-margin-bottom:15px;
+align-items:center;
+
+background:#0c0f14;
+
+border-radius:12px;
+overflow:hidden;
+
+box-shadow:0 10px 30px rgba(0,0,0,0.7);
+
 }
 
 .team{
-flex:5;
-font-size:34px;
-font-weight:bold;
-padding-left:25px;
+
 display:flex;
 align-items:center;
+padding:18px 30px;
+
+font-size:28px;
+font-weight:bold;
 color:white;
+
+min-width:260px;
+
 }
 
 .teamA{
@@ -90,51 +113,51 @@ background:linear-gradient(90deg,#0f4d2c,#1f7a3d);
 background:linear-gradient(90deg,#1b3f7a,#2155a3);
 }
 
-.set{
-width:70px;
-background:#e6e6e6;
-font-size:30px;
+.scoreBox{
+
 display:flex;
+flex-direction:column;
 align-items:center;
 justify-content:center;
-font-weight:bold;
+
+background:#141922;
+
+padding:12px 25px;
+color:white;
+
+}
+
+.sets{
+font-size:16px;
+opacity:0.8;
 }
 
 .points{
-width:130px;
-font-size:46px;
+
+font-size:48px;
 font-weight:bold;
-display:flex;
-align-items:center;
-justify-content:center;
-color:white;
-transition:0.3s;
-}
-
-.pointsA{
-background:#1f7a3d;
-}
-
-.pointsB{
-background:#2155a3;
 }
 
 .timer{
-width:300px;
-margin:25px auto;
-background:#0d1f26;
+
+background:#111722;
+
 color:white;
-font-size:38px;
-text-align:center;
-padding:12px;
-border-radius:8px;
+
+font-size:24px;
+padding:12px 25px;
+
+display:flex;
+align-items:center;
+
 }
 
-/* Animation */
+.scoreAnim{
 
-.scoreFlash{
-transform:scale(1.25);
-box-shadow:0 0 25px #fff;
+transform:scale(1.3);
+text-shadow:0 0 12px white;
+transition:0.2s;
+
 }
 
 </style>
@@ -142,23 +165,46 @@ box-shadow:0 0 25px #fff;
 
 <body>
 
-<div class="scoreboard">
+<div class="overlay">
 
-<div class="row">
-<div class="team teamA" id="teamA">FINDORFF</div>
-<div class="set" id="setsA">0</div>
-<div class="points pointsA" id="pointsA">0</div>
+<div class="team teamA" id="teamA">
+FINDORFF
 </div>
 
-<div class="row">
-<div class="team teamB" id="teamB">GAST</div>
-<div class="set" id="setsB">0</div>
-<div class="points pointsB" id="pointsB">0</div>
+<div class="scoreBox">
+
+<div class="sets">
+Sätze <span id="setsA">0</span>
 </div>
 
-<div class="timer" id="timer">00:00</div>
+<div class="points" id="pointsA">
+0
+</div>
+
+</div>
+
+<div class="timer" id="timer">
+00:00
+</div>
+
+<div class="scoreBox">
+
+<div class="sets">
+Sätze <span id="setsB">0</span>
+</div>
+
+<div class="points" id="pointsB">
+0
+</div>
+
+</div>
+
+<div class="team teamB" id="teamB">
+GAST
+</div>
 
 </div>
 
 </body>
 </html>
+```
