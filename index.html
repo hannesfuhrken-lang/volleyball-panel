@@ -31,13 +31,15 @@ margin-bottom:20px;
 margin-top:20px;
 }
 
+/* BUTTONS */
+
 button{
 width:48%;
-padding:14px;
+padding:16px;
 margin:6px 1%;
 border:none;
 border-radius:8px;
-font-size:15px;
+font-size:18px;
 font-weight:bold;
 cursor:pointer;
 }
@@ -47,15 +49,20 @@ cursor:pointer;
 .gray{background:#3a3f47;color:white;}
 .red{background:#b42323;color:white;width:100%;}
 
+/* INPUT */
+
 input{
 width:100%;
-padding:10px;
+padding:12px;
 margin-bottom:8px;
 border:none;
 border-radius:6px;
 background:#222833;
 color:white;
+font-size:16px;
 }
+
+/* SCORE DISPLAY */
 
 .scoreDisplay{
 display:flex;
@@ -72,14 +79,18 @@ width:40%;
 }
 
 .points{
-font-size:34px;
+font-size:42px;
 font-weight:bold;
 }
 
 .timer{
-font-size:22px;
+font-size:24px;
 font-weight:bold;
 }
+
+/* ============================= */
+/* MOBILE VERSION */
+/* ============================= */
 
 @media (max-width:600px){
 
@@ -94,25 +105,25 @@ font-size:28px;
 
 button{
 width:100%;
-font-size:20px;
-padding:18px;
-margin:8px 0;
+font-size:22px;
+padding:22px;
+margin:10px 0;
 }
 
 .green,.blue{
-font-size:22px;
-}
-
-.scoreDisplay{
-padding:18px;
+font-size:24px;
 }
 
 .points{
-font-size:48px;
+font-size:56px;
 }
 
 .timer{
-font-size:26px;
+font-size:28px;
+}
+
+.scoreDisplay{
+padding:20px;
 }
 
 }
@@ -129,7 +140,7 @@ font-size:26px;
 <div class="scoreDisplay">
 
 <div class="teamBox">
-<div id="teamA">TEAM A</div>
+<div id="teamA">FINDORFF</div>
 <div class="points" id="pointsA">0</div>
 <div>Sätze <span id="setsA">0</span></div>
 </div>
@@ -137,7 +148,7 @@ font-size:26px;
 <div class="timer" id="timer">00:00</div>
 
 <div class="teamBox">
-<div id="teamB">TEAM B</div>
+<div id="teamB">GAST</div>
 <div class="points" id="pointsB">0</div>
 <div>Sätze <span id="setsB">0</span></div>
 </div>
@@ -334,4 +345,3 @@ seconds=0;
 
 </body>
 </html>
-
