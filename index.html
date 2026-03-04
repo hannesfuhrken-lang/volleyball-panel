@@ -1,24 +1,84 @@
+```html
 <!DOCTYPE html>
 <html lang="de">
 <head>
 <meta charset="UTF-8">
 <title>SG Findorff Control Panel</title>
+
 <style>
-body{margin:0; background:#111; font-family:Arial; color:white;}
-#loginScreen{position:fixed;width:100%;height:100%;display:flex;justify-content:center;align-items:center;flex-direction:column; background:#0d0d0d;}
-#loginScreen input{padding:12px;font-size:18px;border-radius:8px;border:none;margin-top:10px;text-align:center;}
-#loginScreen button{margin-top:15px;padding:10px 20px;font-size:16px;border:none;border-radius:8px;background:#1f7a3d;color:white; cursor:pointer;}
-.panel{display:none; max-width:420px; margin:40px auto; background:#1b1b1b; padding:25px; border-radius:12px; box-shadow:0 0 25px rgba(0,0,0,0.5);}
-button{width:48%; padding:12px; margin:5px 1%; font-size:16px; border:none; border-radius:8px; cursor:pointer; font-weight:bold;}
-.green{background:#1f7a3d;color:white;}
-.blue{background:#2155a3;color:white;}
-.gray{background:#444;color:white;}
-.red{background:#a32121;color:white;width:100%;}
-.section{margin-top:20px;}
+body{margin:0;background:#111;font-family:Arial;color:white}
+
+#loginScreen{
+position:fixed;
+width:100%;
+height:100%;
+display:flex;
+justify-content:center;
+align-items:center;
+flex-direction:column;
+background:#0d0d0d;
+}
+
+#loginScreen input{
+padding:12px;
+font-size:18px;
+border-radius:8px;
+border:none;
+margin-top:10px;
+text-align:center;
+}
+
+#loginScreen button{
+margin-top:15px;
+padding:10px 20px;
+font-size:16px;
+border:none;
+border-radius:8px;
+background:#1f7a3d;
+color:white;
+cursor:pointer;
+}
+
+.panel{
+display:none;
+max-width:420px;
+margin:40px auto;
+background:#1b1b1b;
+padding:25px;
+border-radius:12px;
+box-shadow:0 0 25px rgba(0,0,0,0.5);
+}
+
+button{
+width:48%;
+padding:12px;
+margin:5px 1%;
+font-size:16px;
+border:none;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.green{background:#1f7a3d;color:white}
+.blue{background:#2155a3;color:white}
+.gray{background:#444;color:white}
+.red{background:#a32121;color:white;width:100%}
+
+.section{margin-top:20px}
+
+input{
+width:100%;
+padding:10px;
+border-radius:6px;
+border:none;
+margin-top:5px;
+}
 </style>
 </head>
 
 <body>
+
 <div id="loginScreen">
 <h2>🔐 SG Findorff Control</h2>
 <input type="password" id="pinInput" placeholder="PIN eingeben">
@@ -27,11 +87,24 @@ button{width:48%; padding:12px; margin:5px 1%; font-size:16px; border:none; bord
 </div>
 
 <div class="panel" id="panel">
+
 <h2>SG Findorff Panel</h2>
+
+<div class="section">
+<h3>Teamnamen</h3>
+
+<input id="teamAInput" placeholder="Team A Name">
+<input id="teamBInput" placeholder="Team B Name">
+
+<button class="gray" style="width:100%;margin-top:10px;" onclick="updateTeams()">
+Teams aktualisieren
+</button>
+</div>
 
 <div class="section">
 <button class="green" onclick="addPoint('A')">+ Punkt A</button>
 <button class="blue" onclick="addPoint('B')">+ Punkt B</button>
+
 <button class="green" onclick="removePoint('A')">− Punkt A</button>
 <button class="blue" onclick="removePoint('B')">− Punkt B</button>
 </div>
@@ -50,107 +123,155 @@ button{width:48%; padding:12px; margin:5px 1%; font-size:16px; border:none; bord
 <div class="section">
 <button class="red" onclick="fullReset()">Komplett Reset</button>
 </div>
+
 </div>
 
-<script type="module" defer>
+<script type="module">
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-analytics.js";
 import { getDatabase, ref, set, update, get } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-// ------------------- FIREBASE -------------------
 const firebaseConfig = {
-  apiKey: "AIzaSyDd9E5P9vR_Buwgh_shM0p-msjdwq3I7XU",
-  authDomain: "volleyballscoreboard-52f22.firebaseapp.com",
-  databaseURL: "https://volleyballscoreboard-52f22-default-rtdb.firebaseio.com",
-  projectId: "volleyballscoreboard-52f22",
-  storageBucket: "volleyballscoreboard-52f22.firebasestorage.app",
-  messagingSenderId: "826519449030",
-  appId: "1:826519449030:web:110111c4e1fa1f8fa796c7",
-  measurementId: "G-3GHBDBFFCL"
+apiKey: "AIzaSyDd9E5P9vR_Buwgh_shM0p-msjdwq3I7XU",
+authDomain: "volleyballscoreboard-52f22.firebaseapp.com",
+databaseURL: "https://volleyballscoreboard-52f22-default-rtdb.firebaseio.com",
+projectId: "volleyballscoreboard-52f22",
+storageBucket: "volleyballscoreboard-52f22.firebasestorage.app",
+messagingSenderId: "826519449030",
+appId: "1:826519449030:web:110111c4e1fa1f8fa796c7"
 };
 
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 const db = getDatabase(app);
 
-// ------------------- PIN -------------------
-const CORRECT_PIN = "1910";
-window.checkPIN = function(){
-  const entered = document.getElementById("pinInput").value;
-  if(entered === CORRECT_PIN){
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("panel").style.display = "block";
-  } else {
-    document.getElementById("error").innerText = "Falsche PIN!";
-  }
+const CORRECT_PIN="1910";
+
+window.checkPIN=function(){
+
+const entered=document.getElementById("pinInput").value;
+
+if(entered===CORRECT_PIN){
+document.getElementById("loginScreen").style.display="none";
+document.getElementById("panel").style.display="block";
+}else{
+document.getElementById("error").innerText="Falsche PIN!";
 }
 
-// ------------------- SPIELFUNKTIONEN -------------------
-let timerInterval; 
-let seconds = 0;
+}
+
+let timerInterval;
+let seconds=0;
 
 async function readData(){
-  const snap = await get(ref(db));
-  return snap.val();
+const snap = await get(ref(db));
+return snap.val();
 }
 
 window.addPoint = async function(team){
-  const d = await readData();
-  if(!d) return;
-  if(team==="A") update(ref(db), {pointsA: d.pointsA + 1});
-  else update(ref(db), {pointsB: d.pointsB + 1});
+
+const d = await readData();
+if(!d) return;
+
+if(team==="A") update(ref(db),{pointsA:d.pointsA+1});
+else update(ref(db),{pointsB:d.pointsB+1});
+
 }
 
 window.removePoint = async function(team){
-  const d = await readData();
-  if(!d) return;
-  if(team==="A" && d.pointsA>0) update(ref(db), {pointsA: d.pointsA - 1});
-  if(team==="B" && d.pointsB>0) update(ref(db), {pointsB: d.pointsB - 1});
+
+const d = await readData();
+if(!d) return;
+
+if(team==="A" && d.pointsA>0) update(ref(db),{pointsA:d.pointsA-1});
+if(team==="B" && d.pointsB>0) update(ref(db),{pointsB:d.pointsB-1});
+
 }
 
 window.addSet = async function(team){
-  const d = await readData();
-  if(!d) return;
-  if(team==="A") update(ref(db), {setsA: d.setsA+1, pointsA:0, pointsB:0});
-  else update(ref(db), {setsB: d.setsB+1, pointsA:0, pointsB:0});
+
+const d = await readData();
+if(!d) return;
+
+if(team==="A") update(ref(db),{
+setsA:d.setsA+1,
+pointsA:0,
+pointsB:0
+});
+
+else update(ref(db),{
+setsB:d.setsB+1,
+pointsA:0,
+pointsB:0
+});
+
 }
 
-window.startTimer = function(){
-  if(timerInterval) return;
-  timerInterval = setInterval(()=>{
-    seconds++;
-    updateTimer();
-  },1000);
+window.updateTeams = function(){
+
+const teamA=document.getElementById("teamAInput").value;
+const teamB=document.getElementById("teamBInput").value;
+
+update(ref(db),{
+teamA:teamA,
+teamB:teamB
+});
+
 }
 
-window.stopTimer = function(){
-  clearInterval(timerInterval);
-  timerInterval = null;
+window.startTimer=function(){
+
+if(timerInterval) return;
+
+timerInterval=setInterval(()=>{
+seconds++;
+updateTimer();
+},1000);
+
 }
 
-window.resetTimer = function(){
-  seconds = 0;
-  updateTimer();
+window.stopTimer=function(){
+clearInterval(timerInterval);
+timerInterval=null;
+}
+
+window.resetTimer=function(){
+seconds=0;
+updateTimer();
 }
 
 function updateTimer(){
-  const min = String(Math.floor(seconds/60)).padStart(2,"0");
-  const sec = String(seconds%60).padStart(2,"0");
-  update(ref(db), {timer:`${min}:${sec}`});
+
+const min=String(Math.floor(seconds/60)).padStart(2,"0");
+const sec=String(seconds%60).padStart(2,"0");
+
+update(ref(db),{
+timer:`${min}:${sec}`
+});
+
 }
 
-window.fullReset = function(){
-  if(confirm("Alles zurücksetzen?")){
-    set(ref(db),{
-      teamA:"FINDORFF",
-      teamB:"GAST",
-      pointsA:0, pointsB:0,
-      setsA:0, setsB:0,
-      timer:"00:00"
-    });
-    seconds=0;
-  }
+window.fullReset=function(){
+
+if(confirm("Alles zurücksetzen?")){
+
+set(ref(db),{
+teamA:"FINDORFF",
+teamB:"GAST",
+pointsA:0,
+pointsB:0,
+setsA:0,
+setsB:0,
+timer:"00:00"
+});
+
+seconds=0;
+
 }
+
+}
+
 </script>
+
 </body>
 </html>
+```
